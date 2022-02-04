@@ -4,16 +4,12 @@ pub mod counter;
 use app::AppMessage;
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 
-macro_rules! gen_keypair {
-	($name:ident: $mods:expr, $code:expr) => {
-		pub const $name: (KeyModifiers, KeyCode) = ($mods, $code);
-	};
-}
+type KeyPair = (KeyModifiers, KeyCode);
 
-gen_keypair!(QUIT: KeyModifiers::NONE, KeyCode::Char('q'));
-gen_keypair!(SIGINT: KeyModifiers::CONTROL, KeyCode::Char('c'));
-gen_keypair!(PAUSE: KeyModifiers::NONE, KeyCode::Char('p'));
-gen_keypair!(BREAK: KeyModifiers::NONE, KeyCode::Char('b'));
+pub const QUIT: KeyPair = (KeyModifiers::NONE, KeyCode::Char('q'));
+pub const SIGINT: KeyPair = (KeyModifiers::CONTROL, KeyCode::Char('c'));
+pub const PAUSE: KeyPair = (KeyModifiers::NONE, KeyCode::Char('p'));
+pub const BREAK: KeyPair = (KeyModifiers::NONE, KeyCode::Char('b'));
 
 pub fn handle_key_event(event: KeyEvent) -> (bool, Option<AppMessage>) {
 	match (event.modifiers, event.code) {
