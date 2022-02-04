@@ -4,7 +4,7 @@
 
 # Prototype 2
 
-- [ ] Refactor event handling
+- [x] Refactor event handling
 - [ ] Notifications (`libnotify`)
 - [ ] Help page
 
