@@ -9,13 +9,6 @@ use flussomodoro::{app::App, counter::Counter};
 use futures::{FutureExt, StreamExt};
 use tokio::{io, time::interval};
 
-// logic:
-// every 5 seconds of focus, the user gets 1 second of break.
-// that's 5 minutes of break per 25 minutes of focus.
-// once 25 minutes has elapsed, a focus session is complete.
-// once the user has completed 4 focus sessions, they get 15 minutes of break.
-// if the user runs out of break, their current focus session resets.
-
 #[derive(Parser)]
 struct Opts {}
 
