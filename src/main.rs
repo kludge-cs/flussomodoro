@@ -7,11 +7,13 @@ use clap::Parser;
 use crossterm::event::Event;
 use flussomodoro::app::{App, AppOpts};
 use futures::{FutureExt, StreamExt};
+use notify_rust::Notification;
 use tokio::{io, time::interval};
 
 #[tokio::main]
 async fn main() -> Result<(), io::Error> {
-	let mut app = App::with_opts(AppOpts::parse()).setup_term()?;
+	let opts = AppOpts::parse();
+	let mut app = App::with_opts(&opts).setup_term()?;
 	let mut interval = interval(Duration::from_secs(1));
 	interval.tick().await; // first tick is immediate
 	let mut event_stream = crossterm::event::EventStream::new().fuse();
@@ -37,7 +39,9 @@ async fn main() -> Result<(), io::Error> {
 				}
 			}
 		}
-		app.counter.work();
+		app.counter.work(|msg| {
+			opts.notify.then(|| Notification::from(msg).show().unwrap())
+		});
 		app.render();
 	}
 
