@@ -1,11 +1,12 @@
 use derivative::Derivative;
+use notify_rust::NotificationHandle;
 use tui::{
 	layout::Constraint,
 	style::{Color, Modifier, Style},
 	widgets::{Block, Borders, Row, Table},
 };
 
-use crate::app::AppOpts;
+use crate::app::{AppNotification, AppOpts};
 
 // logic:
 // every 5 seconds of focus, the user gets 1 second of break.
@@ -37,7 +38,7 @@ impl Counter {
 		Counter::default()
 	}
 
-	pub fn with_opts(opts: AppOpts) -> Self {
+	pub fn with_opts(opts: &AppOpts) -> Self {
 		Counter {
 			original_focus_time: opts.focus_time.unwrap_or(DEFAULT_FOCUS_TIME),
 			focus_time: opts.focus_time.unwrap_or(DEFAULT_FOCUS_TIME),
@@ -77,7 +78,10 @@ impl Counter {
 		self.work_state.0.take();
 	}
 
-	pub fn work(&mut self) {
+	pub fn work<F>(&mut self, notifier: F)
+	where
+		F: Fn(AppNotification) -> Option<NotificationHandle>,
+	{
 		if !self.work_state.is_active() {
 			return;
 		} else if self.work_state.is_focusing() {
@@ -87,19 +91,24 @@ impl Counter {
 			self.focus_time -= 1;
 		} else {
 			self.break_time -= 1;
-			if self.break_time == 0 {
+			if self.break_time == 30 {
+				notifier(AppNotification::BreakAlmostOver);
+			} else if self.break_time == 0 {
 				self.reset();
+				notifier(AppNotification::BreakOver);
 			}
 		}
 
 		if self.focus_time == 0 {
 			self.pom += 1;
 			self.reset();
+			notifier(AppNotification::PomComplete);
 		}
 
 		if self.pom == 5 {
 			self.break_time += self.clover_break_bonus;
 			self.pom = 1;
+			notifier(AppNotification::CloverComplete);
 		}
 	}
 
