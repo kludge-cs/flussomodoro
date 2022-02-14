@@ -5,7 +5,8 @@
 # Prototype 2
 
 - [x] Refactor event handling
-- [ ] Notifications (`libnotify`)
+- [ ] CLI for Counter settings
+- [ ] Notifications (`notify-rust`)
 - [ ] Help page
 
 # Prototype 3
