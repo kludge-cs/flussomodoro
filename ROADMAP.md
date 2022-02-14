@@ -5,9 +5,10 @@
 # Prototype 2
 
 - [x] Refactor event handling
-- [ ] CLI for Counter settings
+- [x] CLI for Counter settings
 - [ ] Notifications (`notify-rust`)
 - [ ] Help page
+- [ ] UI improvements
 
 # Prototype 3
 
