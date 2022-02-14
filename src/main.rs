@@ -5,22 +5,19 @@ use std::{
 
 use clap::Parser;
 use crossterm::event::Event;
-use flussomodoro::{app::App, counter::Counter};
+use flussomodoro::app::{App, AppOpts};
 use futures::{FutureExt, StreamExt};
 use tokio::{io, time::interval};
 
-#[derive(Parser)]
-struct Opts {}
-
 #[tokio::main]
 async fn main() -> Result<(), io::Error> {
-	let mut app = App::new(Counter::new()).setup_term()?;
+	let mut app = App::with_opts(AppOpts::parse()).setup_term()?;
 	let mut interval = interval(Duration::from_secs(1));
 	interval.tick().await; // first tick is immediate
 	let mut event_stream = crossterm::event::EventStream::new().fuse();
 
 	let stop_lock = AtomicBool::new(false);
-	app.start();
+	app.render();
 
 	while !stop_lock.load(Ordering::SeqCst) {
 		loop {

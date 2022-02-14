@@ -5,6 +5,8 @@ use tui::{
 	widgets::{Block, Borders, Row, Table},
 };
 
+use crate::app::AppOpts;
+
 // logic:
 // every 5 seconds of focus, the user gets 1 second of break.
 // that's 5 minutes of break per 25 minutes of focus.
@@ -13,13 +15,17 @@ use tui::{
 // if the user runs out of break, their current focus session resets.
 
 const DEFAULT_FOCUS_TIME: u16 = 25 * 60;
-const CLOVER_BREAK_BONUS: u16 = 15 * 60;
+const DEFAULT_CLOVER_BONUS: u16 = 15 * 60;
 
 #[derive(Derivative, Copy, Clone)]
 #[derivative(Default)]
 pub struct Counter {
 	#[derivative(Default(value = "DEFAULT_FOCUS_TIME"))]
+	original_focus_time: u16,
+	#[derivative(Default(value = "DEFAULT_FOCUS_TIME"))]
 	focus_time: u16,
+	#[derivative(Default(value = "DEFAULT_CLOVER_BONUS"))]
+	clover_break_bonus: u16,
 	break_time: u16,
 	#[derivative(Default(value = "1"))]
 	pom: u8,
@@ -28,7 +34,18 @@ pub struct Counter {
 
 impl Counter {
 	pub fn new() -> Self {
-		Self::default()
+		Counter::default()
+	}
+
+	pub fn with_opts(opts: AppOpts) -> Self {
+		Counter {
+			original_focus_time: opts.focus_time.unwrap_or(DEFAULT_FOCUS_TIME),
+			focus_time: opts.focus_time.unwrap_or(DEFAULT_FOCUS_TIME),
+			clover_break_bonus: opts
+				.clover_break_bonus
+				.unwrap_or(DEFAULT_CLOVER_BONUS),
+			..Counter::default()
+		}
 	}
 
 	pub fn focus_time(&self) -> u16 {
@@ -56,7 +73,7 @@ impl Counter {
 	}
 
 	pub fn reset(&mut self) {
-		self.focus_time = DEFAULT_FOCUS_TIME;
+		self.focus_time = self.original_focus_time;
 		self.work_state.0.take();
 	}
 
@@ -81,7 +98,7 @@ impl Counter {
 		}
 
 		if self.pom == 5 {
-			self.break_time += CLOVER_BREAK_BONUS;
+			self.break_time += self.clover_break_bonus;
 			self.pom = 1;
 		}
 	}

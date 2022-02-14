@@ -1,5 +1,6 @@
 use std::io::{stdout, Error, Stdout};
 
+use clap::Parser;
 use crossterm::{
 	event::KeyEvent,
 	terminal::{disable_raw_mode, enable_raw_mode},
@@ -10,6 +11,15 @@ use crate::{counter::Counter, keys::*};
 
 type CrossTerminal = Terminal<CrosstermBackend<Stdout>>;
 
+#[derive(Parser)]
+#[clap(author, version, about)]
+pub struct AppOpts {
+	#[clap(short, long)]
+	pub focus_time: Option<u16>,
+	#[clap(short, long)]
+	pub clover_break_bonus: Option<u16>,
+}
+
 pub struct App {
 	pub counter: Counter,
 	terminal: CrossTerminal,
@@ -19,6 +29,13 @@ impl App {
 	pub fn new(counter: Counter) -> Self {
 		App {
 			counter,
+			terminal: Terminal::new(CrosstermBackend::new(stdout())).unwrap(),
+		}
+	}
+
+	pub fn with_opts(opts: AppOpts) -> Self {
+		App {
+			counter: Counter::with_opts(opts),
 			terminal: Terminal::new(CrosstermBackend::new(stdout())).unwrap(),
 		}
 	}
@@ -42,11 +59,6 @@ impl App {
 			}
 			(_, _) => false,
 		}
-	}
-
-	pub fn start(&mut self) {
-		self.counter.start();
-		self.render();
 	}
 
 	pub fn render(&mut self) {
