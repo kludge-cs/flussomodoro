@@ -97,7 +97,7 @@ impl Counter {
 			self.reset();
 		}
 
-		if self.pom == 4 {
+		if self.pom == 5 {
 			self.break_time += self.clover_break_bonus;
 			self.pom = 1;
 		}
