@@ -6,7 +6,7 @@
 
 - [x] Refactor event handling
 - [x] CLI for Counter settings
-- [ ] Notifications (`notify-rust`)
+- [x] Notifications (`notify-rust`)
 - [ ] Help page
 - [ ] UI improvements
 
