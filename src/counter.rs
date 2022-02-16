@@ -1,10 +1,5 @@
 use derivative::Derivative;
 use notify_rust::NotificationHandle;
-use tui::{
-	layout::Constraint,
-	style::{Color, Modifier, Style},
-	widgets::{Block, Borders, Row, Table},
-};
 
 use crate::app::{AppNotification, AppOpts};
 
@@ -110,28 +105,6 @@ impl Counter {
 			self.pom = 1;
 			notifier(AppNotification::CloverComplete);
 		}
-	}
-
-	pub fn to_table(&self) -> Table {
-		Table::new(vec![Row::new(vec![
-			self.focus_time.to_string(),
-			self.break_time.to_string(),
-			self.pom.to_string(),
-			self.work_state.to_string(),
-		])])
-		.header(
-			Row::new(vec!["Focus Time", "Break Time", "Pom", "State"])
-				.style(Style::default().add_modifier(Modifier::UNDERLINED)),
-		)
-		.style(Style::default().fg(Color::White).bg(Color::Black))
-		.block(Block::default().borders(Borders::ALL))
-		.widths(&[
-			Constraint::Length(10),
-			Constraint::Length(10),
-			Constraint::Length(3),
-			Constraint::Length(15),
-		])
-		.column_spacing(2)
 	}
 }
 
