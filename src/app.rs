@@ -98,7 +98,7 @@ mod widgets {
 		layout::{Alignment, Constraint, Direction, Layout},
 		style::{Color, Modifier, Style},
 		text::{Span, Spans},
-		widgets::{Block, Borders, Row, Table, Tabs, Widget},
+		widgets::{Block, Borders, Row, Table, Tabs, Widget, Paragraph},
 		Frame,
 	};
 	use enumerare::Cycle;
@@ -145,7 +145,7 @@ mod widgets {
 				chunks[0],
 			);
 			match app.page {
-				AppPage::Main =>  f.render_widget(app.page.render_main(&app.counter), chunks[1]),
+				AppPage::Main => f.render_widget(app.page.render_main(&app.counter), chunks[1]),
 				AppPage::Help => f.render_widget(app.page.render_help(), chunks[1]),
 			}
 		}
@@ -175,9 +175,12 @@ mod widgets {
 		}
 
 		fn render_help(&self) -> impl Widget {
-			Table::new(vec![Row::new(vec!["testing!"])])
-				.header(Row::new(vec!["owo"]))
-				.widths(&[Constraint::Length(15)])
+			Paragraph::new(vec![
+				Spans::from(vec![Span::styled("Help", Style::default().add_modifier(Modifier::UNDERLINED))]),
+				Spans::from(vec![Span::raw("[h] - This page")]),
+			])
+			.style(Style::default().fg(Color::White).bg(Color::Black))
+			.block(Block::default().borders(Borders::ALL))
 		}
 	}
 }
