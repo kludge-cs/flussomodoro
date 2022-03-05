@@ -1,19 +1,19 @@
 [package]
 name = "flussomodoro"
 version = "0.1.0"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
-anyhow = "1.0.45"
-clap = "3.0.0-beta.5"
-crossbeam = "0.8.1"
-crossterm = { version = "0.22.1", features = ["event-stream"] }
+anyhow = "1.0.55"
+clap = { version = "3.1.5", features = ["std", "color", "derive", "cargo", "wrap_help"], default-features = false }
+crossterm = { version = "0.23.0", features = ["event-stream"] }
 derivative = "2.2.0"
 enumerare = "0.1.0"
-futures = "0.3.17"
-notify-rust = "4.5.5"
+futures = "0.3.21"
+notify-rust = "4.5.6"
 thiserror = "1.0.30"
-tokio = { version = "1.14.0", features = ["full"] }
-tui = { version = "0.16.0", features = ["crossterm"], default-features = false }
+tokio = { version = "1.17.0", features = ["full"] }
+tui = { version = "0.17.0", features = ["crossterm"], default-features = false }
+tui_circular_gauge = { path = "tui_circular_gauge" }
 
 [features]

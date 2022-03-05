@@ -5,7 +5,10 @@ use std::{
 
 use clap::Parser;
 use crossterm::event::Event;
-use flussomodoro::{terminal::Terminal, app::{App, AppOpts}};
+use flussomodoro::{
+	app::{App, AppOpts},
+	terminal::Terminal,
+};
 use futures::{FutureExt, StreamExt};
 use notify_rust::Notification;
 use tokio::{io, time::interval};

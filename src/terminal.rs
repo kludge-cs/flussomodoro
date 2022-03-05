@@ -1,6 +1,13 @@
 use std::io::{self, Stdout};
-use crossterm::{terminal::{disable_raw_mode, LeaveAlternateScreen, enable_raw_mode, EnterAlternateScreen}, execute};
-use tui::{backend::{CrosstermBackend}, Terminal as TuiTerminal};
+
+use crossterm::{
+	execute,
+	terminal::{
+		disable_raw_mode, enable_raw_mode, EnterAlternateScreen,
+		LeaveAlternateScreen,
+	},
+};
+use tui::{backend::CrosstermBackend, Terminal as TuiTerminal};
 
 type CrossTerminal = TuiTerminal<CrosstermBackend<Stdout>>;
 

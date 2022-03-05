@@ -44,19 +44,23 @@ impl Counter {
 		}
 	}
 
-	pub fn focus_time(&self) -> &u16 {
+	pub const fn original_focus_time(&self) -> &u16 {
+		&self.original_focus_time
+	}
+
+	pub const fn focus_time(&self) -> &u16 {
 		&self.focus_time
 	}
 
-	pub fn break_time(&self) -> &u16 {
+	pub const fn break_time(&self) -> &u16 {
 		&self.break_time
 	}
 
-	pub fn pom(&self) -> &u8 {
+	pub const fn pom(&self) -> &u8 {
 		&self.pom
 	}
 
-	pub fn work_state(&self) -> &CounterWorkState {
+	pub const fn work_state(&self) -> &CounterWorkState {
 		&self.work_state
 	}
 

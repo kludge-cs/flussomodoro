@@ -1,39 +1,38 @@
 use clap::Parser;
 use crossterm::event::KeyEvent;
 use notify_rust::Notification;
-use widgets::AppPage;
 
-use crate::{counter::Counter, keys::*, terminal::Terminal};
+use crate::{counter::Counter, keys::*, terminal::Terminal, ui::*};
 
 #[derive(Default, Parser)]
 #[clap(author, version, about)]
 pub struct AppOpts {
 	#[clap(short, long)]
+	/// Number of seconds per focus session
 	pub focus_time: Option<u16>,
 	#[clap(short, long)]
+	/// Number of seconds of bonus break awarded for completing 4 focus
+	/// sessions
 	pub clover_break_bonus: Option<u16>,
 	#[clap(short, long)]
+	/// Whether or not to send notifications
 	pub notify: bool,
 }
 
+#[derive(Default)]
 pub struct App {
 	pub counter: Counter,
 	pub page: AppPage,
+	pub scroll: Option<u16>,
 }
 
 impl App {
 	pub fn new(counter: Counter) -> Self {
-		App {
-			counter,
-			page: AppPage::Main,
-		}
+		App { counter, ..Default::default() }
 	}
 
 	pub fn with_opts(opts: &AppOpts) -> Self {
-		App {
-			counter: Counter::with_opts(opts),
-			page: AppPage::Main,
-		}
+		App { counter: Counter::with_opts(opts), ..Default::default() }
 	}
 
 	pub fn handle_key_event(&mut self, event: KeyEvent) -> bool {
@@ -50,8 +49,19 @@ impl App {
 			HELP => {
 				self.page = match self.page {
 					AppPage::Help => AppPage::Main,
-					_ => AppPage::Help,
+					_ => {
+						self.scroll = Some(0);
+						AppPage::Help
+					},
 				};
+				false
+			}
+			VI_DOWN => {
+				self.scroll = self.scroll.map(|scroll| scroll + 1);
+				false
+			}
+			VI_UP => {
+				self.scroll = self.scroll.map(|scroll| scroll - 1);
 				false
 			}
 			(_, _) => false,
@@ -89,98 +99,5 @@ impl From<AppNotification> for Notification {
 			}
 		};
 		notif
-	}
-}
-
-mod widgets {
-	use tui::{
-		backend::Backend,
-		layout::{Alignment, Constraint, Direction, Layout},
-		style::{Color, Modifier, Style},
-		text::{Span, Spans},
-		widgets::{Block, Borders, Row, Table, Tabs, Widget, Paragraph},
-		Frame,
-	};
-	use enumerare::Cycle;
-
-	use super::App;
-	use crate::counter::Counter;
-
-	#[derive(Copy, Clone, Cycle)]
-	pub enum AppPage {
-		Main,
-		Help,
-	}
-
-	impl AppPage {
-		pub fn render<B: Backend>(f: &mut Frame<B>, app: &App) {
-			let size = f.size();
-			let chunks = Layout::default()
-				.direction(Direction::Vertical)
-				.constraints(vec![Constraint::Length(3), Constraint::Min(0)])
-				.split(size);
-
-			f.render_widget(
-				Block::default()
-					.style(Style::default().fg(Color::White).bg(Color::Black)),
-				size,
-			);
-
-			let titles = ["Counter"]
-				.iter()
-				.map(|t| Spans::from(vec![
-					Span::styled(*t, Style::default().fg(Color::Green)),
-				]))
-				.collect();
-			f.render_widget(
-				Tabs::new(titles)
-					.block(
-						Block::default()
-							.borders(Borders::ALL)
-							.title("Flussomodoro")
-							.title_alignment(Alignment::Center),
-					)
-					.highlight_style(Style::default().fg(Color::Yellow))
-					.select(app.page as usize),
-				chunks[0],
-			);
-			match app.page {
-				AppPage::Main => f.render_widget(app.page.render_main(&app.counter), chunks[1]),
-				AppPage::Help => f.render_widget(app.page.render_help(), chunks[1]),
-			}
-		}
-
-		pub fn render_main(&self, counter: &Counter) -> impl Widget {
-			Table::new(vec![Row::new(vec![
-				counter.focus_time().to_string(),
-				counter.break_time().to_string(),
-				counter.pom().to_string(),
-				counter.work_state().to_string(),
-			])])
-			.header(
-				Row::new(vec!["Focus Time", "Break Time", "Pom", "State"])
-					.style(
-						Style::default().add_modifier(Modifier::UNDERLINED),
-					),
-			)
-			.style(Style::default().fg(Color::White).bg(Color::Black))
-			.block(Block::default().borders(Borders::ALL))
-			.widths(&[
-				Constraint::Length(10),
-				Constraint::Length(10),
-				Constraint::Length(3),
-				Constraint::Length(15),
-			])
-			.column_spacing(2)
-		}
-
-		fn render_help(&self) -> impl Widget {
-			Paragraph::new(vec![
-				Spans::from(vec![Span::styled("Help", Style::default().add_modifier(Modifier::UNDERLINED))]),
-				Spans::from(vec![Span::raw("[h] - This page")]),
-			])
-			.style(Style::default().fg(Color::White).bg(Color::Black))
-			.block(Block::default().borders(Borders::ALL))
-		}
 	}
 }
