@@ -7,8 +7,10 @@
 - [x] Refactor event handling
 - [x] CLI for Counter settings
 - [x] Notifications (`notify-rust`)
-- [ ] Help page
+- [x] Help page
 - [ ] UI improvements
+- [ ] Lazily initialised UI elements
+  - [`Lazy`](https://github.com/rust-lang/rust/issues/74465) or `lazy_static`?
 
 # Prototype 3
 
