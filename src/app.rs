@@ -52,7 +52,7 @@ impl App {
 					_ => {
 						self.scroll = Some(0);
 						AppPage::Help
-					},
+					}
 				};
 				false
 			}

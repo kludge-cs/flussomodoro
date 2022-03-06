@@ -57,6 +57,13 @@ impl AppPage {
 						Constraint::Min(10),
 					])
 					.split(chunks[1]);
+				let status_session_chunks = Layout::default()
+					.direction(Direction::Horizontal)
+					.constraints(vec![
+						Constraint::Percentage(50),
+						Constraint::Percentage(50),
+					])
+					.split(main_chunks[0]);
 				let focus_break_chunks = Layout::default()
 					.direction(Direction::Horizontal)
 					.constraints(vec![
@@ -64,12 +71,6 @@ impl AppPage {
 						Constraint::Percentage(50),
 					])
 					.split(main_chunks[1]);
-				let break_pom_chunks = Layout::default()
-					.constraints(vec![
-						Constraint::Length(5),
-						Constraint::Min(4),
-					])
-					.split(focus_break_chunks[1]);
 				f.render_widget(
 					Paragraph::new(vec![
 						Spans::from(Span::raw("Current task: TBD!")),
@@ -79,13 +80,11 @@ impl AppPage {
 							app.counter.work_state().to_string()
 						)),
 					])
-					.block(Block::default().borders(Borders::ALL))
+					.block(
+						Block::default().borders(Borders::ALL).title("Status"),
+					)
 					.style(Style::default().fg(Color::White)),
-					main_chunks[0],
-				);
-				f.render_widget(
-					focus_gauge(focus_time, original_focus_time),
-					focus_break_chunks[0],
+					status_session_chunks[0],
 				);
 				f.render_widget(
 					Gauge::default()
@@ -101,28 +100,30 @@ impl AppPage {
 						.label(format!("{}/4", app.counter.pom()))
 						.use_unicode(true)
 						.ratio(*app.counter.pom() as f64 / 4.0),
-					break_pom_chunks[0],
+					status_session_chunks[1],
+				);
+				f.render_widget(
+					focus_gauge(focus_time, original_focus_time),
+					focus_break_chunks[0],
 				);
 				f.render_widget(
 					Paragraph::new(vec![
-						Spans::from(format!(
-							"Focus session: {} elapsed, {} remaining",
-							FormattedTime::from(
-								original_focus_time - focus_time
-							),
-							FormattedTime::from(focus_time)
-						)),
 						Spans::from(format!(
 							"Break: {} accumulated",
 							FormattedTime::from(*app.counter.break_time())
 						)),
 					])
-					.block(Block::default().borders(Borders::ALL))
+					.block(
+						Block::default().borders(Borders::ALL).title("Break"),
+					)
 					.style(Style::default().fg(Color::White)),
-					break_pom_chunks[1],
+					focus_break_chunks[1],
 				);
 			}
-			AppPage::Help => f.render_widget(app.page.help_ui((app.scroll.unwrap(), 0)), chunks[1]),
+			AppPage::Help => f.render_widget(
+				app.page.help_ui((app.scroll.unwrap(), 0)),
+				chunks[1],
+			),
 		}
 	}
 
@@ -130,8 +131,13 @@ impl AppPage {
 		Paragraph::new(vec![
 			Spans::from(Span::styled(
 				"Help",
-				Style::default().add_modifier(Modifier::UNDERLINED | Modifier::BOLD),
+				Style::default()
+					.add_modifier(Modifier::UNDERLINED | Modifier::BOLD),
 			)),
+			Spans::from(""),
+			Spans::from("[h] - This menu"),
+			Spans::from("[p] - Toggle pause"),
+			Spans::from("[b] - Toggle break (while not paused)"),
 		])
 		.style(Style::default().fg(Color::White))
 		.block(Block::default().borders(Borders::ALL))
@@ -148,14 +154,16 @@ pub fn focus_gauge(remaining: u16, initial: u16) -> impl Widget {
 				.style(Style::default().fg(Color::White))
 				.title("Focus"),
 		)
-		.gauge_style(Style::default().fg(Color::Red))
+		.gauge_style(Style::default().fg(Color::LightRed))
 		.label(Span::styled(
 			format!(
 				"{} ({:.1}%)",
 				FormattedTime::from(remaining),
 				ratio * 100.0
 			),
-			Style::default().fg(Color::Red).add_modifier(Modifier::ITALIC),
+			Style::default()
+				.fg(Color::LightRed)
+				.add_modifier(Modifier::ITALIC),
 		))
 		.ratio(ratio)
 }
