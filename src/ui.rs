@@ -27,10 +27,10 @@ impl AppPage {
 		let titles = ["Counter"]
 			.iter()
 			.map(|t| {
-				Spans::from(vec![Span::styled(
+				Spans::from(Span::styled(
 					*t,
 					Style::default().fg(Color::Green),
-				)])
+				))
 			})
 			.collect();
 		f.render_widget(
