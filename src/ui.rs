@@ -19,10 +19,9 @@ pub enum AppPage {
 
 impl AppPage {
 	pub fn render<B: Backend>(f: &mut Frame<B>, app: &App) {
-		let size = f.size();
 		let chunks = Layout::default()
 			.constraints(vec![Constraint::Length(3), Constraint::Min(0)])
-			.split(size);
+			.split(f.size());
 
 		let titles = ["Counter"]
 			.iter()
