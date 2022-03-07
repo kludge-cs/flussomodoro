@@ -4,10 +4,9 @@ mod styles;
 use styles::*;
 use tui::{
 	backend::Backend,
-	layout::{Constraint, Direction, Layout, Rect},
-	style::Modifier,
+	layout::{Constraint, Layout, Rect},
 	text::{Span, Spans},
-	widgets::{Gauge, Paragraph, Tabs, Widget},
+	widgets::Tabs,
 	Frame,
 };
 
