@@ -8,9 +8,10 @@
 - [x] CLI for Counter settings
 - [x] Notifications (`notify-rust`)
 - [x] Help page
-- [ ] UI improvements
-- [ ] Lazily initialised UI elements
-  - [`Lazy`](https://github.com/rust-lang/rust/issues/74465) or `lazy_static`?
+- [x] UI improvements
+- [x] Lazily initialised UI elements
+  - ~~[`Lazy`](https://github.com/rust-lang/rust/issues/74465) or `lazy_static`?~~
+    Resolved: using `std::lazy`.
 
 # Prototype 3
 

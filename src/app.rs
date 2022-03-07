@@ -2,7 +2,12 @@ use clap::Parser;
 use crossterm::event::KeyEvent;
 use notify_rust::Notification;
 
-use crate::{counter::Counter, keys::*, terminal::Terminal, ui::*};
+use crate::{
+	counter::Counter,
+	keys::*,
+	terminal::Terminal,
+	ui::{AppPage, Page},
+};
 
 #[derive(Default, Parser)]
 #[clap(author, version, about)]
@@ -23,7 +28,6 @@ pub struct AppOpts {
 pub struct App {
 	pub counter: Counter,
 	pub page: AppPage,
-	pub scroll: Option<u16>,
 }
 
 impl App {
@@ -47,29 +51,23 @@ impl App {
 				false
 			}
 			HELP => {
-				self.page = match self.page {
-					AppPage::Help => AppPage::Main,
-					_ => {
-						self.scroll = Some(0);
-						AppPage::Help
-					}
-				};
+				self.page = self.page.toggle_help();
 				false
 			}
 			VI_DOWN => {
-				self.scroll = self.scroll.map(|scroll| scroll + 1);
+				self.page.scroll_by(1);
 				false
 			}
 			VI_UP => {
-				self.scroll = self.scroll.map(|scroll| scroll - 1);
+				self.page.scroll_by(-1);
 				false
 			}
 			(_, _) => false,
 		}
 	}
 
-	pub fn draw_with(&mut self, terminal: &mut Terminal) {
-		terminal.0.draw(|f| AppPage::render(f, self)).unwrap();
+	pub fn draw_with(&self, terminal: &mut Terminal) {
+		terminal.0.draw(|f| self.page.render(f.size(), f, self)).unwrap();
 	}
 }
 
