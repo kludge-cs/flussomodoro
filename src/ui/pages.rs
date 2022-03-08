@@ -1,3 +1,4 @@
+use time_fmt::FormattedTime;
 use tui::{
 	backend::Backend,
 	layout::{Constraint, Direction, Layout, Rect},
@@ -9,7 +10,7 @@ use tui::{
 use tui_circular_gauge::CircularGauge;
 
 use super::{styles::*, Page};
-use crate::{app::App, time_fmt::FormattedTime};
+use crate::app::App;
 
 #[derive(Clone, Copy, Default)]
 pub struct Main {}

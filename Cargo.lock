@@ -342,26 +342,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6907e25393cdcc1f4f3f513d9aac1e840eb1cc341a0fccb01171f7d14d10b946"
 
 [[package]]
-name = "enumerare"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10b57d43ec71929d2f89f49b41ff7f09f35f6ca7f4272757ac4059a372d34af9"
-dependencies = [
- "enumerare-macros",
-]
-
-[[package]]
-name = "enumerare-macros"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "88a582f6d7184249e9cbdde1566657b13bda1c99ab5a2b1926e9a3679161797b"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
 name = "enumflags2"
 version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -405,10 +385,10 @@ dependencies = [
  "clap",
  "crossterm 0.23.0",
  "derivative",
- "enumerare",
  "futures",
  "notify-rust",
  "thiserror",
+ "time_fmt",
  "tokio",
  "tui",
  "tui_circular_gauge",
@@ -1237,6 +1217,10 @@ dependencies = [
  "wasi 0.10.0+wasi-snapshot-preview1",
  "winapi",
 ]
+
+[[package]]
+name = "time_fmt"
+version = "0.1.0"
 
 [[package]]
 name = "tokio"
