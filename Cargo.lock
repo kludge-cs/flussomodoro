@@ -391,7 +391,7 @@ dependencies = [
  "time_fmt",
  "tokio",
  "tui",
- "tui_circular_gauge",
+ "tui_flusso_widgets",
 ]
 
 [[package]]
@@ -1276,9 +1276,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "tui_circular_gauge"
+name = "tui_flusso_widgets"
 version = "0.1.0"
 dependencies = [
+ "time_fmt",
  "tui",
 ]
 

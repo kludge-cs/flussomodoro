@@ -19,7 +19,7 @@ notify-rust = "4.5.6"
 thiserror = "1.0.30"
 tokio = { version = "1.17.0", features = ["full"] }
 tui = { version = "0.17.0", features = ["crossterm"], default-features = false }
-tui_circular_gauge = { path = "tui_circular_gauge" }
+tui_flusso_widgets = { path = "tui_flusso_widgets" }
 time_fmt = { path = "time_fmt" }
 
 [features]

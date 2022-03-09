@@ -1,11 +1,13 @@
+mod font;
+
 use std::{cmp::min, f64::consts::TAU};
 
 use tui::{
 	buffer::Buffer,
-	layout::Rect,
+	layout::{Alignment, Rect},
 	style::{Color, Style},
 	text::Span,
-	widgets::{Block, Widget},
+	widgets::{Block, Paragraph, Widget},
 };
 
 #[derive(Default)]
@@ -75,29 +77,29 @@ impl<'a> Widget for CircularGauge<'a> {
 			gauge_area.x + gauge_area.width / 2,
 			gauge_area.y + gauge_area.height / 2,
 		);
-		let rad = if let Some(x) =
-			(min(gauge_area.height, gauge_area.width) / 2).checked_sub(2)
-		{
-			x as f64
-		} else {
-			return;
-		};
-		let diam = rad * 2.0;
-		let rad_sq = rad.powi(2);
 
 		// compute label value and its position
 		// label is put at the center of the gauge_area
 		let label = self.label.unwrap_or_else(|| {
 			Span::from(format!("{}%", (self.ratio * 100.0).round()))
 		});
-		let clamped_label_width = min(diam as u16, label.width() as u16);
+		let label_width = label.width() as u16;
+
+		let rad = match (min(gauge_area.height, gauge_area.width) / 2)
+			.checked_sub(2)
+		{
+			Some(x) if x >= (label_width / 2) - 1 => x as f64,
+			_ => return fallback_text(label, self.style, gauge_area, buf),
+		};
+		let diam = rad * 2.0;
+		let rad_sq = rad.powi(2);
 
 		// the gauge will be filled proportionally to the ratio
 		let origin_angle = self.origin_angle.unwrap_or(0.0);
 		let final_angle = self.final_angle.unwrap_or_else(|| TAU * self.ratio);
 
-		for x in origin.0 + 1 - diam as u16..origin.0 + diam as u16 {
-			for y in origin.1 + 1 - rad as u16..origin.1 + rad as u16 {
+		for x in origin.0 - diam as u16..=origin.0 + diam as u16 {
+			for y in origin.1 - rad as u16..=origin.1 + rad as u16 {
 				let opp = (x as f64 - origin.0 as f64) * 0.5;
 				let adj = y as f64 - origin.1 as f64;
 				// determine if point lies within circle - pythagorean theorem
@@ -114,16 +116,99 @@ impl<'a> Widget for CircularGauge<'a> {
 					// spaces are needed to apply the background styling
 					buf.get_mut(x, y)
 						.set_symbol("*")
-						.set_fg(self.gauge_style.fg.unwrap_or(Color::Reset))
-						.set_bg(self.gauge_style.bg.unwrap_or(Color::Reset));
+						.set_style(self.gauge_style);
 				}
 			}
 		}
 		buf.set_span(
-			origin.0 - clamped_label_width / 2,
+			origin.0 - label_width / 2,
 			origin.1,
 			&label,
-			clamped_label_width,
+			label_width,
 		);
 	}
+}
+
+pub struct Ascii<'a> {
+	block: Option<Block<'a>>,
+	style: Style,
+	text: String,
+}
+
+impl<'a> Ascii<'a> {
+	pub fn new<T: ToString>(text: T) -> Self {
+		let mut text = text.to_string();
+		text.make_ascii_lowercase();
+		Ascii { block: None, style: Style::default(), text }
+	}
+
+	pub fn block(mut self, block: Block<'a>) -> Self {
+		self.block = Some(block);
+		self
+	}
+
+	pub fn style(mut self, style: Style) -> Self {
+		self.style = style;
+		self
+	}
+}
+
+impl<'a> Widget for Ascii<'a> {
+	fn render(mut self, area: Rect, buf: &mut Buffer) {
+		buf.set_style(area, self.style);
+		let ascii_area = match self.block.take() {
+			Some(b) => {
+				let inner_area = b.inner(area);
+				b.render(area, buf);
+				inner_area
+			}
+			None => area,
+		};
+
+		let width = {
+			let len = self.text.len();
+			(len * 5 + (len - 1) * 3) as u16
+		};
+		// Use normal text if buffer is too small
+		if ascii_area.height < 5 || ascii_area.width < width as u16 {
+			return fallback_text(self.text, self.style, ascii_area, buf);
+		}
+
+		let origin: (u16, u16) = (
+			ascii_area.x + ascii_area.width / 2 - width / 2,
+			ascii_area.y + ascii_area.height / 2 - 2,
+		);
+
+		for (i, digit) in self.text.chars().enumerate() {
+			let start_x = origin.0 + i as u16 * 8;
+			let glyph = font::get_glyph(digit);
+			let mut mask = font::START_MASK;
+			for glyph_px in 0..25 {
+				if glyph & mask > 0 {
+					buf.get_mut(
+						start_x + glyph_px % 5,
+						origin.1 + glyph_px / 5,
+					)
+					.set_symbol(" ")
+					.set_bg(self.style.fg.unwrap_or(Color::Reset))
+					.set_fg(self.style.bg.unwrap_or(Color::Reset));
+				}
+				mask >>= 1;
+			}
+		}
+	}
+}
+
+pub fn fallback_text<'a, T>(
+	text: T,
+	style: Style,
+	area: Rect,
+	buf: &mut Buffer,
+) where
+	T: Into<tui::text::Text<'a>>,
+{
+	Paragraph::new(text)
+		.style(style)
+		.alignment(Alignment::Center)
+		.render(area, buf)
 }

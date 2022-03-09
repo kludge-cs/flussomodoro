@@ -7,7 +7,7 @@ use tui::{
 	widgets::{Gauge, Paragraph, Widget},
 	Frame,
 };
-use tui_circular_gauge::CircularGauge;
+use tui_flusso_widgets::{Ascii, CircularGauge};
 
 use super::{styles::*, Page};
 use crate::app::App;
@@ -89,12 +89,9 @@ fn focus_gauge(remaining: u16, initial: u16) -> impl Widget {
 }
 
 fn break_gauge(break_time: u16) -> impl Widget {
-	Paragraph::new(vec![Spans::from(Span::styled(
-		format!("Break: {} accumulated", FormattedTime::from(break_time)),
-		*BREAK,
-	))])
-	.block(block_std().title("Break"))
-	.style(*STD)
+	Ascii::new(FormattedTime::from(break_time))
+		.block(block_std().title("Break"))
+		.style(*BREAK)
 }
 
 #[derive(Clone, Copy, Default)]
