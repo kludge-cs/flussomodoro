@@ -1,9 +1,4 @@
 use derivative::Derivative;
-use tui::{
-	layout::Constraint,
-	style::{Color, Modifier, Style},
-	widgets::{Block, Borders, Row, Table},
-};
 
 use crate::app::{AppNotification, AppOpts};
 
@@ -48,23 +43,27 @@ impl Counter {
 		}
 	}
 
-	pub fn focus_time(&self) -> u16 {
+	pub const fn original_focus_time(&self) -> u16 {
+		self.original_focus_time
+	}
+
+	pub const fn focus_time(&self) -> u16 {
 		self.focus_time
 	}
 
-	pub fn break_time(&self) -> u16 {
+	pub const fn break_time(&self) -> u16 {
 		self.break_time
 	}
 
-	pub fn pom(&self) -> u8 {
+	pub const fn pom(&self) -> u8 {
 		self.pom
 	}
 
-	pub fn work_state(&self) -> CounterWorkState {
+	pub const fn work_state(&self) -> CounterWorkState {
 		self.work_state
 	}
 
-	pub fn work_state_mut(&mut self) -> &mut CounterWorkState {
+	pub const fn work_state_mut(&mut self) -> &mut CounterWorkState {
 		&mut self.work_state
 	}
 
@@ -106,28 +105,6 @@ impl Counter {
 			self.pom = 1;
 			notifier(AppNotification::CloverComplete);
 		}
-	}
-
-	pub fn to_table(&self) -> Table {
-		Table::new(vec![Row::new(vec![
-			self.focus_time.to_string(),
-			self.break_time.to_string(),
-			self.pom.to_string(),
-			self.work_state.to_string(),
-		])])
-		.header(
-			Row::new(vec!["Focus Time", "Break Time", "Pom", "State"])
-				.style(Style::default().add_modifier(Modifier::UNDERLINED)),
-		)
-		.style(Style::default().fg(Color::White).bg(Color::Black))
-		.block(Block::default().borders(Borders::ALL))
-		.widths(&[
-			Constraint::Length(10),
-			Constraint::Length(10),
-			Constraint::Length(3),
-			Constraint::Length(15),
-		])
-		.column_spacing(2)
 	}
 }
 

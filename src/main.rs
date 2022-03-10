@@ -5,21 +5,27 @@ use std::{
 
 use clap::Parser;
 use crossterm::event::Event;
-use flussomodoro::app::{App, AppOpts};
+use flussomodoro::{
+	app::{App, AppOpts},
+	terminal::Terminal,
+};
 use futures::{FutureExt, StreamExt};
 use notify_rust::Notification;
 use tokio::{io, time::interval};
 
 #[tokio::main]
 async fn main() -> Result<(), io::Error> {
+	let mut terminal = Terminal::with_stdout(std::io::stdout());
 	let opts = AppOpts::parse();
-	let mut app = App::with_opts(&opts).setup_term()?;
+	let mut app = App::with_opts(&opts);
 	let mut interval = interval(Duration::from_secs(1));
 	interval.tick().await; // first tick is immediate
 	let mut event_stream = crossterm::event::EventStream::new().fuse();
 
 	let stop_lock = AtomicBool::new(false);
-	app.render();
+
+	terminal.setup_backend()?;
+	app.draw_with(&mut terminal);
 
 	while !stop_lock.load(Ordering::SeqCst) {
 		loop {
@@ -31,7 +37,7 @@ async fn main() -> Result<(), io::Error> {
 						if should_stop {
 							break;
 						}
-						app.render();
+						app.draw_with(&mut terminal);
 					}
 				}
 				_ = interval.tick().fuse() => {
@@ -44,7 +50,7 @@ async fn main() -> Result<(), io::Error> {
 				Notification::from(msg).show().unwrap();
 			}
 		});
-		app.render();
+		app.draw_with(&mut terminal);
 	}
 
 	Ok(())

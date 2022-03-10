@@ -1,0 +1,8 @@
+[package]
+name = "tui_flusso_widgets"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tui = "0.17.0"
+time_fmt = { path = "../time_fmt" }

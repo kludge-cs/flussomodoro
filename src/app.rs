@@ -1,52 +1,50 @@
-use std::io::{stdout, Error, Stdout};
-
 use clap::Parser;
-use crossterm::{
-	event::KeyEvent,
-	terminal::{disable_raw_mode, enable_raw_mode},
-};
+use crossterm::event::KeyEvent;
 use notify_rust::Notification;
-use tui::{backend::CrosstermBackend, Terminal};
 
-use crate::{counter::Counter, keys::*};
+use crate::{
+	counter::Counter,
+	keys::*,
+	terminal::Terminal,
+	ui::{AppPage, Page},
+};
 
-type CrossTerminal = Terminal<CrosstermBackend<Stdout>>;
-
-#[derive(Default, Parser)]
+#[derive(Clone, Default, Parser)]
 #[clap(author, version, about)]
 pub struct AppOpts {
 	#[clap(short, long)]
+	/// Number of seconds per focus session
 	pub focus_time: Option<u16>,
 	#[clap(short, long)]
+	/// Number of seconds of bonus break awarded for completing 4 focus
+	/// sessions
 	pub clover_break_bonus: Option<u16>,
 	#[clap(short, long)]
+	/// Whether or not to send notifications
 	pub notify: bool,
+	/// Whether or not to use ASCII art instead of gauges
+	#[clap(short, long)]
+	pub ascii: bool,
 }
 
+#[derive(Default)]
 pub struct App {
 	pub counter: Counter,
-	terminal: CrossTerminal,
+	pub page: AppPage,
+	pub opts: AppOpts,
 }
 
 impl App {
 	pub fn new(counter: Counter) -> Self {
-		App {
-			counter,
-			terminal: Terminal::new(CrosstermBackend::new(stdout())).unwrap(),
-		}
+		App { counter, ..Default::default() }
 	}
 
 	pub fn with_opts(opts: &AppOpts) -> Self {
 		App {
-			counter: Counter::with_opts(&opts),
-			terminal: Terminal::new(CrosstermBackend::new(stdout())).unwrap(),
+			counter: Counter::with_opts(opts),
+			opts: opts.clone(),
+			..Default::default()
 		}
-	}
-
-	pub fn setup_term(mut self) -> Result<Self, Error> {
-		enable_raw_mode()?;
-		self.terminal.clear()?;
-		Ok(self)
 	}
 
 	pub fn handle_key_event(&mut self, event: KeyEvent) -> bool {
@@ -60,24 +58,24 @@ impl App {
 				self.counter.work_state_mut().toggle_break();
 				false
 			}
+			HELP => {
+				self.page = self.page.toggle_help();
+				false
+			}
+			VI_DOWN => {
+				self.page.scroll_by(1);
+				false
+			}
+			VI_UP => {
+				self.page.scroll_by(-1);
+				false
+			}
 			(_, _) => false,
 		}
 	}
 
-	pub fn render(&mut self) {
-		let counter = &self.counter;
-		self.terminal
-			.draw(|frame| {
-				frame.render_widget(counter.to_table(), frame.size());
-			})
-			.expect("Rendering failed.");
-	}
-}
-
-impl Drop for App {
-	fn drop(&mut self) {
-		disable_raw_mode().unwrap();
-		self.terminal.clear().unwrap();
+	pub fn draw_with(&self, terminal: &mut Terminal) {
+		terminal.0.draw(|f| self.page.render(f.size(), f, self)).unwrap();
 	}
 }
 
