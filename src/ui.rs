@@ -58,7 +58,9 @@ impl Page for AppPage {
 			Tabs::new(titles)
 				.block(block_std().title("Flussomodoro"))
 				.highlight_style(*ELEM_SEL)
-				.select(unsafe { std::mem::transmute(self) }),
+				.select(unsafe {
+					std::mem::transmute(std::mem::discriminant(self))
+				}),
 			chunks[0],
 		);
 
