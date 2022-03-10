@@ -1,5 +1,6 @@
 [package]
 name = "flussomodoro"
+authors = ["Tyler J. Russell"]
 version = "0.1.0"
 edition = "2021"
 

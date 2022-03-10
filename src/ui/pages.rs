@@ -122,7 +122,13 @@ impl Help {
 				vec![
 					Spans::from(Span::styled("Help", *HEADING)),
 					Spans::from(""),
+					Spans::from(Span::styled("Global", *HEADING)),
+					Spans::from(""),
 					Spans::from("[h] - This menu"),
+					Spans::from("[j/k] - Scroll down/up respectively (where applicable)"),
+					Spans::from(""),
+					Spans::from(Span::styled("Counter", *HEADING)),
+					Spans::from(""),
 					Spans::from("[p] - Toggle pause"),
 					Spans::from("[b] - Toggle break (while not paused)"),
 				]

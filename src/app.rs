@@ -11,6 +11,8 @@ use crate::{
 
 #[derive(Clone, Default, Parser)]
 #[clap(author, version, about)]
+/// A time management utility that understands your needs - press <h> in the
+/// application for more information
 pub struct AppOpts {
 	#[clap(short, long)]
 	/// Number of seconds per focus session
