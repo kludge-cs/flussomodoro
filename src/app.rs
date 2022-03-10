@@ -9,7 +9,7 @@ use crate::{
 	ui::{AppPage, Page},
 };
 
-#[derive(Default, Parser)]
+#[derive(Clone, Default, Parser)]
 #[clap(author, version, about)]
 pub struct AppOpts {
 	#[clap(short, long)]
@@ -22,12 +22,16 @@ pub struct AppOpts {
 	#[clap(short, long)]
 	/// Whether or not to send notifications
 	pub notify: bool,
+	/// Whether or not to use ASCII art instead of gauges
+	#[clap(short, long)]
+	pub ascii: bool,
 }
 
 #[derive(Default)]
 pub struct App {
 	pub counter: Counter,
 	pub page: AppPage,
+	pub opts: AppOpts,
 }
 
 impl App {
@@ -36,7 +40,11 @@ impl App {
 	}
 
 	pub fn with_opts(opts: &AppOpts) -> Self {
-		App { counter: Counter::with_opts(opts), ..Default::default() }
+		App {
+			counter: Counter::with_opts(opts),
+			opts: opts.clone(),
+			..Default::default()
+		}
 	}
 
 	pub fn handle_key_event(&mut self, event: KeyEvent) -> bool {

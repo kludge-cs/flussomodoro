@@ -60,12 +60,16 @@ impl Page for Main {
 				.ratio(*app.counter.pom() as f64 / 4.0),
 			status_session_chunks[1],
 		);
+		if app.opts.ascii {
+			f.render_widget(focus_ascii(focus_time), focus_break_chunks[0]);
+		} else {
+			f.render_widget(
+				focus_gauge(focus_time, original_focus_time),
+				focus_break_chunks[0],
+			);
+		}
 		f.render_widget(
-			focus_gauge(focus_time, original_focus_time),
-			focus_break_chunks[0],
-		);
-		f.render_widget(
-			break_gauge(*app.counter.break_time()),
+			break_ascii(*app.counter.break_time()),
 			focus_break_chunks[1],
 		);
 	}
@@ -88,7 +92,13 @@ fn focus_gauge(remaining: u16, initial: u16) -> impl Widget {
 		.ratio(ratio)
 }
 
-fn break_gauge(break_time: u16) -> impl Widget {
+pub fn focus_ascii(focus_time: u16) -> impl Widget {
+	Ascii::new(FormattedTime::from(focus_time))
+		.block(block_std().title("Focus"))
+		.style(*FOCUS)
+}
+
+fn break_ascii(break_time: u16) -> impl Widget {
 	Ascii::new(FormattedTime::from(break_time))
 		.block(block_std().title("Break"))
 		.style(*BREAK)
