@@ -1,5 +1,4 @@
 #![feature(once_cell)]
-#![feature(derive_default_enum)]
 
 pub mod app;
 pub mod counter;
