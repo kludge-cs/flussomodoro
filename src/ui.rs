@@ -1,3 +1,5 @@
+#![allow(clippy::borrow_interior_mutable_const)]
+
 mod pages;
 mod styles;
 
@@ -33,9 +35,8 @@ impl AppPage {
 	}
 
 	pub fn scroll_by(&mut self, scroll: i16) {
-		match self {
-			AppPage::Help(help) => help.scroll_by(scroll),
-			_ => (),
+		if let AppPage::Help(help) = self {
+			help.scroll_by(scroll)
 		}
 	}
 }

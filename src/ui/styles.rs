@@ -1,3 +1,5 @@
+#![allow(clippy::declare_interior_mutable_const)]
+
 use std::lazy::{Lazy, OnceCell};
 
 use tui::{
