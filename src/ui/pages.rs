@@ -1,6 +1,6 @@
 #![allow(clippy::declare_interior_mutable_const)]
 
-use std::{cmp::min, lazy::OnceCell};
+use std::{cmp::min, lazy::SyncOnceCell};
 
 use time_fmt::FormattedTime;
 use tui::{
@@ -114,7 +114,7 @@ pub struct Help {
 }
 
 impl Help {
-	const CONTENT: OnceCell<Vec<Spans<'static>>> = OnceCell::new();
+	const CONTENT: SyncOnceCell<Vec<Spans<'static>>> = SyncOnceCell::new();
 
 	fn content() -> Vec<Spans<'static>> {
 		Self::CONTENT

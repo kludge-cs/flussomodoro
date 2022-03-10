@@ -1,6 +1,4 @@
-#![allow(clippy::declare_interior_mutable_const)]
-
-use std::lazy::{Lazy, OnceCell};
+use std::lazy::{SyncLazy, SyncOnceCell};
 
 use tui::{
 	layout::Alignment,
@@ -8,21 +6,23 @@ use tui::{
 	widgets::{Block, Borders},
 };
 
-pub const STD: Lazy<Style> = Lazy::new(|| Style::default().fg(Color::White));
-pub const FOCUS: Lazy<Style> =
-	Lazy::new(|| Style::default().fg(Color::LightRed));
-pub const BREAK: Lazy<Style> =
-	Lazy::new(|| Style::default().fg(Color::LightBlue));
-pub const ELEM: Lazy<Style> = Lazy::new(|| Style::default().fg(Color::Green));
-pub const ELEM_SEL: Lazy<Style> =
-	Lazy::new(|| Style::default().fg(Color::Yellow));
-pub const X_GAUGE: Lazy<Style> =
-	Lazy::new(|| Style::default().fg(Color::Green).bg(Color::Black));
-pub const HEADING: Lazy<Style> = Lazy::new(|| {
+pub static STD: SyncLazy<Style> =
+	SyncLazy::new(|| Style::default().fg(Color::White));
+pub static FOCUS: SyncLazy<Style> =
+	SyncLazy::new(|| Style::default().fg(Color::LightRed));
+pub static BREAK: SyncLazy<Style> =
+	SyncLazy::new(|| Style::default().fg(Color::LightBlue));
+pub static ELEM: SyncLazy<Style> =
+	SyncLazy::new(|| Style::default().fg(Color::Green));
+pub static ELEM_SEL: SyncLazy<Style> =
+	SyncLazy::new(|| Style::default().fg(Color::Yellow));
+pub static X_GAUGE: SyncLazy<Style> =
+	SyncLazy::new(|| Style::default().fg(Color::Green).bg(Color::Black));
+pub static HEADING: SyncLazy<Style> = SyncLazy::new(|| {
 	Style::default().add_modifier(Modifier::UNDERLINED | Modifier::BOLD)
 });
 
-const BLOCK_STD: OnceCell<Block> = OnceCell::new();
+static BLOCK_STD: SyncOnceCell<Block> = SyncOnceCell::new();
 
 pub fn block_std() -> Block<'static> {
 	BLOCK_STD
