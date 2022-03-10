@@ -32,5 +32,5 @@ pub fn block_std() -> Block<'static> {
 				.style(*STD)
 				.title_alignment(Alignment::Center)
 		})
-		.clone()
+		.to_owned()
 }

@@ -1,3 +1,7 @@
+#![allow(clippy::declare_interior_mutable_const)]
+
+use std::{cmp::min, lazy::OnceCell};
+
 use time_fmt::FormattedTime;
 use tui::{
 	backend::Backend,
@@ -110,28 +114,40 @@ pub struct Help {
 }
 
 impl Help {
+	const CONTENT: OnceCell<Vec<Spans<'static>>> = OnceCell::new();
+
+	fn content() -> Vec<Spans<'static>> {
+		Self::CONTENT
+			.get_or_init(|| {
+				vec![
+					Spans::from(Span::styled("Help", *HEADING)),
+					Spans::from(""),
+					Spans::from("[h] - This menu"),
+					Spans::from("[p] - Toggle pause"),
+					Spans::from("[b] - Toggle break (while not paused)"),
+				]
+			})
+			.to_owned()
+	}
+
 	pub fn scroll_to(&mut self, scroll: u16) {
-		self.scroll = scroll;
+		self.scroll = min(scroll, Self::content().len() as u16 - 1);
 	}
 
 	pub fn scroll_by(&mut self, scroll: i16) {
-		self.scroll = self.scroll.wrapping_add(scroll as u16);
+		if let Some(new_scroll_pos) = self.scroll.checked_add_signed(scroll) {
+			self.scroll_to(new_scroll_pos);
+		};
 	}
 }
 
 impl Page for Help {
 	fn render<B: Backend>(&self, area: Rect, f: &mut Frame<B>, _: &App) {
 		f.render_widget(
-			Paragraph::new(vec![
-				Spans::from(Span::styled("Help", *HEADING)),
-				Spans::from(""),
-				Spans::from("[h] - This menu"),
-				Spans::from("[p] - Toggle pause"),
-				Spans::from("[b] - Toggle break (while not paused)"),
-			])
-			.style(*STD)
-			.block(block_std())
-			.scroll((self.scroll, 0)),
+			Paragraph::new(Self::content())
+				.style(*STD)
+				.block(block_std())
+				.scroll((self.scroll, 0)),
 			area,
 		)
 	}

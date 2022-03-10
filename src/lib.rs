@@ -1,4 +1,5 @@
 #![feature(once_cell)]
+#![feature(mixed_integer_ops)]
 
 pub mod app;
 pub mod counter;
