@@ -22,6 +22,15 @@ tokio = { version = "1.17.0", features = ["full"] }
 tui = { version = "0.17.0", features = ["crossterm"], default-features = false }
 tui_flusso_widgets = { path = "tui_flusso_widgets" }
 time_fmt = { path = "time_fmt" }
+crossbeam-channel = "0.5.2"
+diesel = { git = "https://github.com/diesel-rs/diesel", branch = "master", features = [
+	"sqlite",
+	"returning_clauses_for_sqlite_3_35",
+] }
+diesel_migrations = { git = "https://github.com/diesel-rs/diesel", branch = "master", features = [
+	"sqlite",
+] }
+dirs = "4.0.0"
 
 [features]
 

@@ -5,6 +5,11 @@ use std::{
 
 use clap::Parser;
 use crossterm::event::Event;
+use diesel::{Connection, SqliteConnection};
+use diesel_migrations::{
+	embed_migrations, EmbeddedMigrations, MigrationHarness,
+};
+use dirs::config_dir;
 use flussomodoro::{
 	app::{App, AppOpts},
 	terminal::Terminal,
@@ -13,8 +18,23 @@ use futures::{FutureExt, StreamExt};
 use notify_rust::Notification;
 use tokio::{io, time::interval};
 
+const MIGRATIONS: EmbeddedMigrations = embed_migrations!();
+
 #[tokio::main]
 async fn main() -> Result<(), io::Error> {
+	let dir = config_dir()
+		.map(|mut path| {
+			path.push("flussomodoro.db");
+			path
+		})
+		.and_then(|path| path.to_str().map(|x| x.to_string()))
+		.expect("Failed to acquire config directory");
+
+	let mut conn = SqliteConnection::establish(&dir)
+		.expect("Failed to connect to database");
+
+	conn.run_pending_migrations(MIGRATIONS).expect("Failed to run migrations");
+
 	let mut terminal = Terminal::with_stdout(std::io::stdout());
 	let opts = AppOpts::parse();
 	let mut app = App::with_opts(&opts);
