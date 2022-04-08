@@ -16,7 +16,7 @@ pub struct Counter {
 	break_time: u16,
 	#[derivative(Default(value = "1"))]
 	pom: u8,
-	work_state: Option<bool>,
+	work_state: CounterWorkState,
 }
 
 impl Counter {
@@ -36,42 +36,27 @@ impl Counter {
 		self.pom
 	}
 
-	pub fn work_state(&self) -> Option<bool> {
+	pub fn work_state(&self) -> CounterWorkState {
 		self.work_state
 	}
 
-	pub fn work_state_to_string(work_state: Option<bool>) -> String {
-		match work_state {
-			None => "Paused".to_string(),
-			Some(false) => "Break".to_string(),
-			Some(true) => "Focus".to_string(),
-		}
-	}
-
-	pub fn toggle_active(&mut self) {
-		self.work_state = match self.work_state() {
-			None => Some(true),
-			Some(_) => None,
-		}
-	}
-
-	pub fn toggle_break(&mut self) {
-		self.work_state = self.work_state.take().map(|state| !state);
+	pub fn work_state_mut(&mut self) -> &mut CounterWorkState {
+		&mut self.work_state
 	}
 
 	pub fn start(&mut self) {
-		self.work_state = Some(true);
+		self.work_state = CounterWorkState::from(Some(true));
 	}
 
 	pub fn reset(&mut self) {
 		self.focus_time = DEFAULT_FOCUS_TIME;
-		self.work_state.take();
+		self.work_state.0.take();
 	}
 
 	pub fn work(&mut self) {
-		if self.work_state.is_none() {
+		if !self.work_state.is_active() {
 			return;
-		} else if self.work_state.unwrap() {
+		} else if self.work_state.is_focusing() {
 			if self.focus_time % 5 == 0 {
 				self.break_time += 1;
 			}
@@ -88,7 +73,7 @@ impl Counter {
 			self.reset();
 		}
 
-		if self.pom == 4 {
+		if self.pom == 5 {
 			self.break_time += CLOVER_BREAK_BONUS;
 			self.pom = 1;
 		}
@@ -99,7 +84,7 @@ impl Counter {
 			self.focus_time.to_string(),
 			self.break_time.to_string(),
 			self.pom.to_string(),
-			Self::work_state_to_string(self.work_state),
+			self.work_state.to_string(),
 		])])
 		.header(
 			Row::new(vec!["Focus Time", "Break Time", "Pom", "State"])
@@ -114,5 +99,57 @@ impl Counter {
 			Constraint::Length(15),
 		])
 		.column_spacing(2)
+	}
+}
+
+#[derive(Copy, Clone, Default)]
+pub struct CounterWorkState(Option<bool>);
+
+impl CounterWorkState {
+	pub fn is_active(&self) -> bool {
+		self.0.is_some()
+	}
+
+	pub fn is_focusing(&self) -> bool {
+		self.is_active() && self.0.unwrap()
+	}
+
+	pub fn into_inner(&self) -> Option<bool> {
+		self.0
+	}
+
+	pub fn set_active(&mut self, active: bool) {
+		self.0 = if active { Some(true) } else { None }
+	}
+
+	pub fn toggle_active(&mut self) {
+		self.0 = match self.0 {
+			None => Some(true),
+			Some(_) => None,
+		}
+	}
+
+	pub fn set_break(&mut self, on_break: bool) {
+		self.0 = Some(on_break);
+	}
+
+	pub fn toggle_break(&mut self) {
+		self.0 = self.0.take().map(|state| !state);
+	}
+}
+
+impl From<Option<bool>> for CounterWorkState {
+	fn from(x: Option<bool>) -> Self {
+		CounterWorkState(x)
+	}
+}
+
+impl ToString for CounterWorkState {
+	fn to_string(&self) -> String {
+		match self.0 {
+			None => "Paused".to_string(),
+			Some(false) => "Break".to_string(),
+			Some(true) => "Focus".to_string(),
+		}
 	}
 }

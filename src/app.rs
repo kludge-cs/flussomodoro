@@ -33,11 +33,11 @@ impl App {
 		match (event.modifiers, event.code) {
 			SIGINT | QUIT => true,
 			PAUSE => {
-				self.counter.toggle_active();
+				self.counter.work_state_mut().toggle_active();
 				false
 			}
 			BREAK => {
-				self.counter.toggle_break();
+				self.counter.work_state_mut().toggle_break();
 				false
 			}
 			(_, _) => false,
