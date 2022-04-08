@@ -24,16 +24,16 @@ impl Counter {
 		Self::default()
 	}
 
-	pub fn focus_time(&self) -> &u16 {
-		&self.focus_time
+	pub fn focus_time(&self) -> u16 {
+		self.focus_time
 	}
 
-	pub fn break_time(&self) -> &u16 {
-		&self.break_time
+	pub fn break_time(&self) -> u16 {
+		self.break_time
 	}
 
-	pub fn pom(&self) -> &u8 {
-		&self.pom
+	pub fn pom(&self) -> u8 {
+		self.pom
 	}
 
 	pub fn work_state(&self) -> Option<bool> {
