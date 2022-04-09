@@ -1,5 +1,4 @@
 use derivative::Derivative;
-use notify_rust::NotificationHandle;
 use tui::{
 	layout::Constraint,
 	style::{Color, Modifier, Style},
@@ -78,10 +77,7 @@ impl Counter {
 		self.work_state.0.take();
 	}
 
-	pub fn work<F>(&mut self, notifier: F)
-	where
-		F: Fn(AppNotification) -> Option<NotificationHandle>,
-	{
+	pub fn work<F: Fn(AppNotification)>(&mut self, notifier: F) {
 		if !self.work_state.is_active() {
 			return;
 		} else if self.work_state.is_focusing() {

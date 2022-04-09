@@ -65,28 +65,28 @@ pub fn counter_work_state_functionality() {
 	let mut test_counter = Counter::new();
 
 	// if not active then work should do nothing
-	(0..5).for_each(|_| test_counter.work());
+	(0..5).for_each(|_| test_counter.work(|_| ()));
 	assert_eq!(test_counter.focus_time(), 25 * 60);
 
 	// if active then work should work
 	test_counter.work_state_mut().toggle_active();
-	(0..5).for_each(|_| test_counter.work());
+	(0..5).for_each(|_| test_counter.work(|_| ()));
 	assert_eq!(test_counter.focus_time(), 25 * 60 - 5);
 	assert_eq!(test_counter.break_time(), 1);
 
 	// if active then work should continue to work linearly
-	(0..20).for_each(|_| test_counter.work());
+	(0..20).for_each(|_| test_counter.work(|_| ()));
 	assert_eq!(test_counter.focus_time(), 25 * 60 - 25);
 	assert_eq!(test_counter.break_time(), 5);
 
 	// if break then work should decrement break and retain focus
 	test_counter.work_state_mut().toggle_break();
-	test_counter.work();
+	test_counter.work(|_| ());
 	assert_eq!(test_counter.focus_time(), 25 * 60 - 25);
 	assert_eq!(test_counter.break_time(), 4);
 
 	// if break empty then work should reset counter
-	(0..5).for_each(|_| test_counter.work());
+	(0..5).for_each(|_| test_counter.work(|_| ()));
 	assert_eq!(test_counter.work_state().into_inner(), None);
 	assert_eq!(test_counter.focus_time(), 25 * 60);
 	assert_eq!(test_counter.break_time(), 0);
@@ -99,7 +99,7 @@ pub fn session_rollover() {
 
 	// if active and focus session finished then move to next session
 	test_counter.start();
-	(0..25 * 60).for_each(|_| test_counter.work());
+	(0..25 * 60).for_each(|_| test_counter.work(|_| ()));
 	assert_eq!(test_counter.work_state().into_inner(), None);
 	assert_eq!(test_counter.focus_time(), 25 * 60);
 	assert_eq!(test_counter.break_time(), 25 * 60 / 5);
@@ -108,11 +108,11 @@ pub fn session_rollover() {
 	// if active and 4 focus sessions finished then clover completed
 	// if clover completed give break bonus
 	test_counter.start();
-	(0..25 * 60).for_each(|_| test_counter.work()); // 2nd
+	(0..25 * 60).for_each(|_| test_counter.work(|_| ())); // 2nd
 	test_counter.start();
-	(0..25 * 60).for_each(|_| test_counter.work()); // 3rd
+	(0..25 * 60).for_each(|_| test_counter.work(|_| ())); // 3rd
 	test_counter.start();
-	(0..25 * 60).for_each(|_| test_counter.work()); // 4th
+	(0..25 * 60).for_each(|_| test_counter.work(|_| ())); // 4th
 	assert_eq!(test_counter.work_state().into_inner(), None);
 	assert_eq!(test_counter.focus_time(), 25 * 60);
 	assert_eq!(test_counter.break_time(), 25 * 60 / 5 * 4 + 15 * 60); // 4 sessions of break + clover bonus

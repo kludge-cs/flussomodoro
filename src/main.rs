@@ -40,7 +40,9 @@ async fn main() -> Result<(), io::Error> {
 			}
 		}
 		app.counter.work(|msg| {
-			opts.notify.then(|| Notification::from(msg).show().unwrap())
+			if opts.notify {
+				Notification::from(msg).show().unwrap();
+			}
 		});
 		app.render();
 	}

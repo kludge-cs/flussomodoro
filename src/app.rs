@@ -97,13 +97,13 @@ impl From<AppNotification> for Notification {
 				notif.body("Your break is almost over! Get ready!")
 			}
 			AppNotification::BreakOver => {
-				notif.body("Your break expired and your pom has reset :(")
+				notif.body("Your break expired and your session has reset :(")
 			}
 			AppNotification::CloverComplete => {
 				notif.body("Clover complete! Great job!")
 			}
 			AppNotification::PomComplete => {
-				notif.body("Pom complete! Keep it up!")
+				notif.body("Session complete! Keep it up!")
 			}
 		};
 		notif
