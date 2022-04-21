@@ -85,9 +85,11 @@ impl<'a> Widget for CircularGauge<'a> {
 		});
 		let label_width = label.width() as u16;
 
-		let rad = match (min(gauge_area.height, gauge_area.width) / 2)
-			.checked_sub(2)
-		{
+		let rad: f64 = match (if gauge_area.width >= gauge_area.height * 2 {
+			gauge_area.height.checked_sub(4).map(|x| x / 2)
+		} else {
+			gauge_area.width.checked_sub(4).map(|x| x / 4)
+		}) {
 			Some(x) if x >= (label_width / 2) - 1 => x as f64,
 			_ => return fallback_text(label, self.style, gauge_area, buf),
 		};
@@ -103,9 +105,7 @@ impl<'a> Widget for CircularGauge<'a> {
 				let opp = (x as f64 - origin.0 as f64) * 0.5;
 				let adj = y as f64 - origin.1 as f64;
 				// determine if point lies within circle - pythagorean theorem
-				if !(rad_sq - diam..=rad_sq + diam)
-					.contains(&(opp.powi(2) + adj.powi(2)))
-				{
+				if !(rad - 1.0..=rad + 1.0).contains(&f64::hypot(opp, adj)) {
 					continue;
 				}
 				let mut mid_angle = opp.atan2(adj);
