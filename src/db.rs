@@ -39,7 +39,16 @@ pub fn create_task(
 pub fn get_tasks(conn: &mut SqliteConnection) -> QueryResult<Vec<Task>> {
 	use crate::schema::tasks::dsl::tasks;
 
-	tasks.select(tasks::all_columns()).load(conn)
+	tasks.select(tasks::all_columns()).get_results(conn)
+}
+
+pub fn get_task(
+	conn: &mut SqliteConnection,
+	task_id: i32,
+) -> QueryResult<Task> {
+	use crate::schema::tasks::dsl::{id, tasks};
+
+	tasks.select(tasks::all_columns()).filter(id.eq(task_id)).get_result(conn)
 }
 
 #[derive(Clone, Queryable, Insertable)]
