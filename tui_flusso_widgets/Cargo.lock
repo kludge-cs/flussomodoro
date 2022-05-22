@@ -186,6 +186,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2dd574626839106c320a323308629dcb1acfc96e32a8cba364ddc61ac23ee83"
 
 [[package]]
+name = "time_fmt"
+version = "0.1.0"
+
+[[package]]
 name = "tui"
 version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -199,9 +203,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "tui_circular_gauge"
+name = "tui_flusso_widgets"
 version = "0.1.0"
 dependencies = [
+ "time_fmt",
  "tui",
 ]
 
