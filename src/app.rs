@@ -4,6 +4,7 @@ use notify_rust::Notification;
 
 use crate::{
 	counter::Counter,
+	db::Task,
 	keys::*,
 	terminal::Terminal,
 	ui::{AppPage, Page},
@@ -34,6 +35,8 @@ pub struct App {
 	pub counter: Counter,
 	pub page: AppPage,
 	pub opts: AppOpts,
+	pub tasks: Vec<Task>,
+	pub selected_task: Option<i32>,
 }
 
 impl App {
@@ -70,6 +73,14 @@ impl App {
 			}
 			VI_UP => {
 				self.page.scroll_by(-1);
+				false
+			}
+			NEXT => {
+				self.page = self.page.next_non_meta();
+				false
+			}
+			PREV => {
+				self.page = self.page.prev_non_meta();
 				false
 			}
 			(_, _) => false,
