@@ -1,14 +1,10 @@
-#![feature(once_cell)]
-#![feature(mixed_integer_ops)]
-#![feature(const_mut_refs)]
-
 #[macro_use]
 extern crate diesel;
 
 pub mod app;
 pub mod counter;
 pub mod db;
-pub mod eisenhower_mat;
+// pub mod eisenhower_mat;
 pub mod schema;
 pub mod terminal;
 mod ui;
