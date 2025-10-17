@@ -78,10 +78,7 @@ impl ConfigValue for u16 {
 		set_config_data(conn, key, self.to_be_bytes().to_vec())
 	}
 
-	fn get_from(
-		conn: &mut SqliteConnection,
-		key: String,
-	) -> QueryResult<Self> {
+	fn get_from(conn: &mut SqliteConnection, key: String) -> QueryResult<Self> {
 		get_config_data(conn, key)
 			.map(|data| u16::from_be_bytes(data.try_into().unwrap()))
 	}
@@ -96,10 +93,7 @@ impl ConfigValue for bool {
 		set_config_data(conn, key, vec![self as u8])
 	}
 
-	fn get_from(
-		conn: &mut SqliteConnection,
-		key: String,
-	) -> QueryResult<Self> {
+	fn get_from(conn: &mut SqliteConnection, key: String) -> QueryResult<Self> {
 		get_config_data(conn, key).map(|data| data[0] == 1)
 	}
 }

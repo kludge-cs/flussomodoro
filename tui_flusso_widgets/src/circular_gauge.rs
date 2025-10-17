@@ -1,6 +1,6 @@
 use std::f64::consts::TAU;
 
-use tui::{
+use ratatui::{
 	buffer::Buffer,
 	layout::Rect,
 	style::Style,
@@ -113,17 +113,10 @@ impl<'a> Widget for CircularGauge<'a> {
 				}
 				if (origin_angle..final_angle).contains(&mid_angle) {
 					// spaces are needed to apply the background styling
-					buf.get_mut(x, y)
-						.set_symbol("*")
-						.set_style(self.gauge_style);
+					buf[(x, y)].set_symbol("*").set_style(self.gauge_style);
 				}
 			}
 		}
-		buf.set_span(
-			origin.0 - label_width / 2,
-			origin.1,
-			&label,
-			label_width,
-		);
+		buf.set_span(origin.0 - label_width / 2, origin.1, &label, label_width);
 	}
 }

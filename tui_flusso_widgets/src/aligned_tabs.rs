@@ -1,16 +1,16 @@
-use tui::{
+use ratatui::{
 	buffer::Buffer,
 	layout::{Alignment, Rect},
 	style::Style,
 	symbols,
-	text::{Span, Spans},
+	text::{Line, Span},
 	widgets::{Block, Widget},
 };
 
 #[derive(Debug, Clone)]
 pub struct AlignedTabs<'a> {
 	block: Option<Block<'a>>,
-	titles: Vec<Spans<'a>>,
+	titles: Vec<Line<'a>>,
 	selected: usize,
 	style: Style,
 	highlight_style: Style,
@@ -19,7 +19,7 @@ pub struct AlignedTabs<'a> {
 }
 
 impl<'a> AlignedTabs<'a> {
-	pub fn new(titles: Vec<Spans<'a>>) -> Self {
+	pub fn new(titles: Vec<Line<'a>>) -> Self {
 		AlignedTabs {
 			block: None,
 			titles,
@@ -96,8 +96,7 @@ impl<'a> Widget for AlignedTabs<'a> {
 			if remaining_width == 0 {
 				break;
 			}
-			let pos =
-				buf.set_spans(x, tabs_area.top(), &title, remaining_width);
+			let pos = buf.set_line(x, tabs_area.top(), &title, remaining_width);
 			if idx == self.selected {
 				buf.set_style(
 					Rect {

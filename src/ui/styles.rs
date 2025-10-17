@@ -1,6 +1,6 @@
 use std::sync::{LazyLock, OnceLock};
 
-use tui::{
+use ratatui::{
 	layout::Alignment,
 	style::{Color, Modifier, Style},
 	widgets::{Block, Borders},

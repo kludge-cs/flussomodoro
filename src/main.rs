@@ -7,7 +7,9 @@ use clap::Parser;
 use crossterm::event::Event;
 use diesel::{Connection, SqliteConnection};
 use diesel_migrations::{
-	embed_migrations, EmbeddedMigrations, MigrationHarness,
+	embed_migrations,
+	EmbeddedMigrations,
+	MigrationHarness,
 };
 use dirs::config_dir;
 use flussomodoro::{

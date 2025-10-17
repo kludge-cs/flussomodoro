@@ -5,20 +5,16 @@ mod circular_gauge;
 pub use aligned_tabs::AlignedTabs;
 pub use ascii::Ascii;
 pub use circular_gauge::CircularGauge;
-use tui::{
+use ratatui::{
 	buffer::Buffer,
 	layout::{Alignment, Rect},
 	style::Style,
 	widgets::{Paragraph, Widget},
 };
 
-pub fn fallback_text<'a, T>(
-	text: T,
-	style: Style,
-	area: Rect,
-	buf: &mut Buffer,
-) where
-	T: Into<tui::text::Text<'a>>,
+pub fn fallback_text<'a, T>(text: T, style: Style, area: Rect, buf: &mut Buffer)
+where
+	T: Into<ratatui::text::Text<'a>>,
 {
 	Paragraph::new(text)
 		.style(style)

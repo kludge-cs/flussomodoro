@@ -3,13 +3,12 @@
 mod pages;
 mod styles;
 
-use styles::*;
-use tui::{
-	backend::Backend,
+use ratatui::{
 	layout::{Alignment, Constraint, Layout, Rect},
-	text::{Span, Spans},
+	text::{Line, Span},
 	Frame,
 };
+use styles::*;
 use tui_flusso_widgets::AlignedTabs;
 
 use crate::app::App;
@@ -81,18 +80,20 @@ impl AppPage {
 }
 
 pub trait Page {
-	fn render<B: Backend>(&self, area: Rect, f: &mut Frame<B>, app: &App);
+	fn render(&self, area: Rect, f: &mut Frame, app: &App);
 }
 
 impl Page for AppPage {
-	fn render<B: Backend>(&self, area: Rect, f: &mut Frame<B>, app: &App) {
+	fn render(&self, area: Rect, f: &mut Frame, app: &App) {
 		let chunks = Layout::default()
 			.constraints(vec![Constraint::Length(3), Constraint::Min(0)])
 			.split(area);
-		let titles = ["Counter", "Eisenhower's Matrix", "Kanban", "Tasks"]
-			.iter()
-			.map(|t| Spans::from(Span::styled(*t, *ELEM)))
-			.collect();
+		let titles: Vec<Line> =
+			["Counter", "Eisenhower's Matrix", "Kanban", "Tasks"]
+				.iter()
+				.map(|t| Line::from(Span::styled(*t, *ELEM)))
+				.collect();
+
 		f.render_widget(
 			AlignedTabs::new(titles)
 				.block(block_std().title("Flussomodoro"))

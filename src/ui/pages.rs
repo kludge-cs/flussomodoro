@@ -2,15 +2,14 @@
 
 use std::{cmp::min, sync::OnceLock};
 
-use time_fmt::FormattedTime;
-use tui::{
-	backend::Backend,
+use ratatui::{
 	layout::{Constraint, Direction, Layout, Rect},
 	style::Modifier,
-	text::{Span, Spans},
+	text::{Line, Span},
 	widgets::{Gauge, Paragraph, Widget},
 	Frame,
 };
+use time_fmt::FormattedTime;
 use tui_flusso_widgets::{Ascii, CircularGauge};
 
 use super::{styles::*, Page};
@@ -20,7 +19,7 @@ use crate::app::App;
 pub struct Main {}
 
 impl Page for Main {
-	fn render<B: Backend>(&self, area: Rect, f: &mut Frame<B>, app: &App) {
+	fn render(&self, area: Rect, f: &mut Frame, app: &App) {
 		let focus_time = app.counter.focus_time();
 		let original_focus_time = app.counter.original_focus_time();
 
@@ -44,9 +43,9 @@ impl Page for Main {
 
 		f.render_widget(
 			Paragraph::new(vec![
-				Spans::from(Span::raw("Current task: TBD!")),
-				Spans::from(Span::raw("Task progress: TBD!")),
-				Spans::from(format!(
+				Line::from(Span::raw("Current task: TBD!")),
+				Line::from(Span::raw("Task progress: TBD!")),
+				Line::from(format!(
 					"Status: {}",
 					app.counter.work_state().to_string()
 				)),
@@ -114,23 +113,23 @@ pub struct Help {
 }
 
 impl Help {
-	const CONTENT: OnceLock<Vec<Spans<'static>>> = OnceLock::new();
+	const CONTENT: OnceLock<Vec<Line<'static>>> = OnceLock::new();
 
-	fn content() -> Vec<Spans<'static>> {
+	fn content() -> Vec<Line<'static>> {
 		Self::CONTENT
 			.get_or_init(|| {
 				vec![
-					Spans::from(Span::styled("Help", *HEADING)),
-					Spans::from(""),
-					Spans::from(Span::styled("Global", *HEADING)),
-					Spans::from(""),
-					Spans::from("[h] - This menu"),
-					Spans::from("[j/k] - Scroll down/up respectively (where applicable)"),
-					Spans::from(""),
-					Spans::from(Span::styled("Counter", *HEADING)),
-					Spans::from(""),
-					Spans::from("[p] - Toggle pause"),
-					Spans::from("[b] - Toggle break (while not paused)"),
+					Line::from(Span::styled("Help", *HEADING)),
+					Line::from(""),
+					Line::from(Span::styled("Global", *HEADING)),
+					Line::from(""),
+					Line::from("[h] - This menu"),
+					Line::from("[j/k] - Scroll down/up respectively (where applicable)"),
+					Line::from(""),
+					Line::from(Span::styled("Counter", *HEADING)),
+					Line::from(""),
+					Line::from("[p] - Toggle pause"),
+					Line::from("[b] - Toggle break (while not paused)"),
 				]
 			})
 			.to_owned()
@@ -148,7 +147,7 @@ impl Help {
 }
 
 impl Page for Help {
-	fn render<B: Backend>(&self, area: Rect, f: &mut Frame<B>, _: &App) {
+	fn render(&self, area: Rect, f: &mut Frame, _: &App) {
 		f.render_widget(
 			Paragraph::new(Self::content())
 				.style(*STD)

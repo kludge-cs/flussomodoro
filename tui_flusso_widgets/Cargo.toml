@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-tui = "0.17.0"
+ratatui = "0.29.0"
 time_fmt = { path = "../time_fmt" }

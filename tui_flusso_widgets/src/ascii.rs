@@ -1,4 +1,4 @@
-use tui::{
+use ratatui::{
 	buffer::Buffer,
 	layout::Rect,
 	style::{Color, Style},
@@ -63,13 +63,10 @@ impl<'a> Widget for Ascii<'a> {
 			let mut mask = font::START_MASK;
 			for glyph_px in 0..25 {
 				if glyph & mask > 0 {
-					buf.get_mut(
-						start_x + glyph_px % 5,
-						origin.1 + glyph_px / 5,
-					)
-					.set_symbol(" ")
-					.set_bg(self.style.fg.unwrap_or(Color::Reset))
-					.set_fg(self.style.bg.unwrap_or(Color::Reset));
+					buf[(start_x + glyph_px % 5, origin.1 + glyph_px / 5)]
+						.set_symbol(" ")
+						.set_bg(self.style.fg.unwrap_or(Color::Reset))
+						.set_fg(self.style.bg.unwrap_or(Color::Reset));
 				}
 				mask >>= 1;
 			}

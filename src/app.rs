@@ -11,22 +11,22 @@ use crate::{
 };
 
 #[derive(Clone, Default, Parser)]
-#[clap(author, version, about)]
+#[command(author, version, about)]
 /// A time management utility that understands your needs - press <h> in the
 /// application for more information
 pub struct AppOpts {
-	#[clap(short, long)]
+	#[arg(short, long)]
 	/// Number of seconds per focus session
 	pub focus_time: Option<u16>,
-	#[clap(short, long)]
+	#[arg(short, long)]
 	/// Number of seconds of bonus break awarded for completing 4 focus
 	/// sessions
 	pub clover_break_bonus: Option<u16>,
-	#[clap(short, long)]
+	#[arg(short, long)]
 	/// Whether or not to send notifications
 	pub notify: bool,
 	/// Whether or not to use ASCII art instead of gauges
-	#[clap(short, long)]
+	#[arg(short, long)]
 	pub ascii: bool,
 }
 
@@ -88,7 +88,7 @@ impl App {
 	}
 
 	pub fn draw_with(&self, terminal: &mut Terminal) {
-		terminal.0.draw(|f| self.page.render(f.size(), f, self)).unwrap();
+		terminal.0.draw(|f| self.page.render(f.area(), f, self)).unwrap();
 	}
 }
 
