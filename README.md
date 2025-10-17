@@ -1,6 +1,6 @@
 # ⏱️ Flussomodoro
 
-Terminal-based time manager to achieve a state of flow
+Terminal-based time manager for achieving a state of flow 
 
 ## 🛠️ Installation
 
