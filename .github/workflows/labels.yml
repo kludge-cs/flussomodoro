@@ -11,4 +11,4 @@ jobs:
   sync:
     uses: kludge-cs/.github/.github/workflows/reusable-labels.yml@main
     secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
