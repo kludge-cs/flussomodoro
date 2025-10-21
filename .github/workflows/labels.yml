@@ -1,0 +1,14 @@
+name: "CI: Sync Labels"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/labels.yml"
+
+jobs:
+  sync:
+    uses: kludge-cs/.github/.github/workflows/reusable-labels.yml@main
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
